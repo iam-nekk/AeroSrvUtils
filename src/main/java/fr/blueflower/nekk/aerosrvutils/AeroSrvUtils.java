@@ -22,7 +22,7 @@ public class AeroSrvUtils {
         if (FMLEnvironment.dist.isClient()) {
             LOGGER.warn("This mod is server-side only and should not be loaded on the client.");
         }
-
+        ModAttachments.ATTACHMENTS.register(modEventBus);
         modEventBus.addListener(this::commonSetup);
     }
 
