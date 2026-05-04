@@ -35,6 +35,13 @@ public class PlayerReceiveCurrency {
         checkHasPlayerReceivedCurrency(player).thenAccept(received -> {
             if (received) return;
 
+            // Migrate from nbt data to sqlite
+            if (player.getPersistentData().getBoolean("receivedCurrency")){
+                setPlayerReceivedCurrencyToTrue(player);
+                log.info(String.format("%s (%s) migrated data successfully", player.getName().getString(), player.getStringUUID()));
+                return;
+            }
+
             log.info(String.format("%s (%s) has not received any currency yet!", player.getName().getString(), player.getStringUUID()));
 
             // Doing it this way is required, otherwise items won't be given properly when inventory is full
@@ -52,15 +59,19 @@ public class PlayerReceiveCurrency {
 
             CACHE.put(player.getUUID(), true);
 
-            DatabaseExecutor.runAsync(() -> {
-                try {
-                    PlayerReceivedCurrencyTable.save(player.getUUID(), true);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            });
+            setPlayerReceivedCurrencyToTrue(player);
         });
 
+    }
+
+    private static void setPlayerReceivedCurrencyToTrue(Player player) {
+        DatabaseExecutor.runAsync(() -> {
+            try {
+                PlayerReceivedCurrencyTable.save(player.getUUID(), true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public static CompletableFuture<Boolean> checkHasPlayerReceivedCurrency(Player player){
