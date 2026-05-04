@@ -116,6 +116,8 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    implementation 'org.xerial:sqlite-jdbc:3.53.0.0'
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
@@ -156,6 +158,15 @@ publishing {
             url "file://${project.projectDir}/repo"
         }
     }
+}
+
+jar {
+    from {
+        configurations.runtimeClasspath.findAll {
+            it.name.contains("sqlite")
+        }.collect { zipTree(it) }
+    }
+    //destinationDirectory.set(file("/home/nekk/.var/app/com.modrinth.ModrinthApp/data/ModrinthApp/profiles/Aero SMP/mods/"))
 }
 
 // IDEA no longer automatically downloads sources/javadoc jars for dependencies, so we need to explicitly enable the behavior.
