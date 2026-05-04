@@ -38,7 +38,9 @@ public class PlayerReceiveCurrency {
             // Migrate from nbt data to sqlite
             if (player.getPersistentData().getBoolean("receivedCurrency")){
                 setPlayerReceivedCurrencyToTrue(player);
+                player.getPersistentData().remove("receivedCurrency");
                 log.info(String.format("%s (%s) migrated data successfully", player.getName().getString(), player.getStringUUID()));
+
                 return;
             }
 
